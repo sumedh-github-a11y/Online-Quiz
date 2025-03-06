@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Animated Quiz</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #000428, #004e92);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            position: relative;
+        }
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        .quiz-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0px 20px 50px rgba(0, 0, 0, 0.6);
+            width: 80%;
+            max-width: 600px;
+            text-align: center;
+            opacity: 0;
+            transform: scale(0.8);
+        }
+        h1 {
+            color: #222;
+            font-size: 26px;
+            opacity: 0;
+        }
+        .question {
+            font-size: 22px;
+            font-weight: bold;
+            margin-top: 20px;
+            opacity: 0;
+        }
+        .options label {
+            display: block;
+            background: #f1f1f1;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .options label:hover {
+            background: #ff6600;
+            color: white;
+            transform: scale(1.1);
+        }
+        button {
+            background: #ff6600;
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            font-size: 20px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+        button:hover {
+            background: #cc5200;
+            transform: scale(1.2);
+        }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+    <div class="quiz-container">
+        <h1>Mind-Blowing Animated Quiz</h1>
+        <div id="quiz"></div>
+        <button id="next">Next</button>
+        <button id="submit" style="display: none;">Submit</button>
+        <div id="result"></div>
+    </div>
+    <script>
+        particlesJS.load('particles-js', 'particles.json', function() {});
+        gsap.to(".quiz-container", {duration: 1, opacity: 1, scale: 1, ease: "power2.out"});
+        gsap.to("h1", {duration: 1.5, opacity: 1, y: -10, delay: 0.5});
+        
+        const quizData = [
+            { question: "What is the capital of France?", options: ["Berlin", "Madrid", "Paris", "Lisbon"], answer: "Paris" },
+            { question: "Which planet is known as the Red Planet?", options: ["Earth", "Mars", "Jupiter", "Venus"], answer: "Mars" },
+            { question: "What is 5 + 7?", options: ["10", "12", "14", "15"], answer: "12" },
+            { question: "Who wrote 'Hamlet'?", options: ["Shakespeare", "Hemingway", "Tolstoy", "Austen"], answer: "Shakespeare" },
+            { question: "What is the speed of light?", options: ["299,792 km/s", "150,000 km/s", "500,000 km/s", "100,000 km/s"], answer: "299,792 km/s" },
+            { question: "Which is the largest ocean?", options: ["Atlantic", "Indian", "Pacific", "Arctic"], answer: "Pacific" },
+            { question: "What is the chemical symbol for Gold?", options: ["Au", "Ag", "Pb", "Hg"], answer: "Au" },
+            { question: "Who developed the theory of relativity?", options: ["Newton", "Einstein", "Galileo", "Tesla"], answer: "Einstein" },
+            { question: "What is the capital of Japan?", options: ["Beijing", "Seoul", "Tokyo", "Bangkok"], answer: "Tokyo" },
+            { question: "How many continents are there?", options: ["5", "6", "7", "8"], answer: "7" },
+            { question: "Which gas do plants absorb?", options: ["Oxygen", "Carbon Dioxide", "Nitrogen", "Hydrogen"], answer: "Carbon Dioxide" },
+            { question: "What is the boiling point of water?", options: ["50°C", "100°C", "150°C", "200°C"], answer: "100°C" },
+            { question: "What is the capital of Australia?", options: ["Sydney", "Melbourne", "Canberra", "Perth"], answer: "Canberra" },
+            { question: "Which is the tallest mountain in the world?", options: ["K2", "Everest", "Kilimanjaro", "Denali"], answer: "Everest" },
+            { question: "What is the freezing point of water?", options: ["0°C", "10°C", "-10°C", "5°C"], answer: "0°C" },
+            { question: "What is the largest planet in the solar system?", options: ["Mars", "Earth", "Jupiter", "Saturn"], answer: "Jupiter" },
+            { question: "Who painted the Mona Lisa?", options: ["Michelangelo", "Van Gogh", "Da Vinci", "Picasso"], answer: "Da Vinci" },
+            { question: "How many legs does a spider have?", options: ["4", "6", "8", "10"], answer: "8" },
+            { question: "Which element is needed for breathing?", options: ["Oxygen", "Carbon", "Hydrogen", "Nitrogen"], answer: "Oxygen" },
+            { question: "Which is the longest river in the world?", options: ["Amazon", "Nile", "Yangtze", "Mississippi"], answer: "Nile" }
+        ];
+        
+        let currentQuestion = 0;
+        let userAnswers = [];
+        const quizContainer = document.getElementById("quiz");
+        const nextButton = document.getElementById("next");
+        const submitButton = document.getElementById("submit");
+        const resultContainer = document.getElementById("result");
+        
+        function showQuestion() {
+            let q = quizData[currentQuestion];
+            quizContainer.innerHTML = `<div class='question'>${q.question}</div>`;
+            let optionsHTML = "<div class='options'>";
+            q.options.forEach(option => {
+                optionsHTML += `<label><input type='radio' name='question' value='${option}'> ${option}</label>`;
+            });
+            optionsHTML += "</div>";
+            quizContainer.innerHTML += optionsHTML;
+            gsap.from(".question", {duration: 1, opacity: 0, x: 100, ease: "power2.out"});
+        }
+        
+        nextButton.addEventListener("click", function() {
+            const selectedOption = document.querySelector("input[name='question']:checked");
+            if (selectedOption) {
+                userAnswers[currentQuestion] = selectedOption.value;
+                currentQuestion++;
+                if (currentQuestion < quizData.length) {
+                    showQuestion();
+                } else {
+                    nextButton.style.display = "none";
+                    submitButton.style.display = "block";
+                }
+            } else {
+                alert("Please select an option!");
+            }
+        });
+        
+        submitButton.addEventListener("click", function() {
+            let score = 0;
+            quizData.forEach((q, index) => {
+                if (userAnswers[index] === q.answer) {
+                    score++;
+                }
+            });
+            gsap.to("#result", {duration: 1, opacity: 1, y: -10, ease: "power2.out"});
+            resultContainer.innerText = `Your Score: ${score} / ${quizData.length}`;
+        });
+        
+        showQuestion();
+    </script>
+</body>
+</html>

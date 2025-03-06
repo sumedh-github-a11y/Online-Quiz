@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            position: relative;
+        }
+        /* Video Background */
+        #bg-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+        .admin-container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0px 20px 50px rgba(0, 0, 0, 0.6);
+            width: 400px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        h1 {
+            color: #333;
+        }
+        textarea, input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #ff6600;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background: #cc5200;
+        }
+    </style>
+</head>
+<body>
+    <video autoplay muted loop id="bg-video">
+        <source src="background.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    <div class="admin-container">
+        <h1>Admin Panel</h1>
+        <textarea id="question" placeholder="Enter Question"></textarea>
+        <textarea id="options" placeholder="Enter 4 options separated by commas"></textarea>
+        <input type="text" id="answer" placeholder="Enter Correct Answer">
+        <button onclick="addQuestion()">Add Question</button>
+        <h3>Quiz Questions</h3>
+        <ul id="questionList"></ul>
+    </div>
+    <script>
+        let questions = [];
+        function addQuestion() {
+            let question = document.getElementById("question").value;
+            let options = document.getElementById("options").value.split(',');
+            let answer = document.getElementById("answer").value;
+            if (question && options.length === 4 && answer) {
+                questions.push({ question, options, answer });
+                updateQuestionList();
+                document.getElementById("question").value = "";
+                document.getElementById("options").value = "";
+                document.getElementById("answer").value = "";
+            } else {
+                alert("Please enter a valid question, 4 options, and an answer.");
+            }
+        }
+        function updateQuestionList() {
+            let list = document.getElementById("questionList");
+            list.innerHTML = "";
+            questions.forEach((q, index) => {
+                let li = document.createElement("li");
+                li.textContent = `${index + 1}. ${q.question} - Answer: ${q.answer}`;
+                list.appendChild(li);
+            });
+        }
+    </script>
+</body>
+</html>
